@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snake Game</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #111;
+            color: #fff;
+            font-family: Arial, sans-serif;
+        }
+        canvas {
+            border: 1px solid #fff;
+        }
+        .controls {
+            margin-top: 20px;
+        }
+        button {
+            margin: 0 5px;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #333;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+        button:disabled {
+            background-color: #555;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    
+    <a class="nav-link" href="../index.html">Personal Finance</a> 
+    <a class="nav-link" href="#">WebApp</a> 
+    <a class="nav-link" href="grad_career.html">Future Career</a>
+    <a class="nav-link" href="resume.html">Resume</a>
+    
+    <canvas id="gameCanvas"></canvas>
+    <div class="controls">
+        <button id="resetButton">Start</button>
+        <button id="pauseButton" disabled>Pause</button>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const resetButton = document.getElementById('resetButton');
+        const pauseButton = document.getElementById('pauseButton');
+
+        // Game settings
+        const gridSize = 20;
+        let tileCount;
+        let speed = 200;
+        let isRunning = false;
+        let isPaused = false;
+        let gameInterval;
+        const foodColors = ["red", "blue", "yellow", "orange", "purple"];
+        let currentFoodColor = foodColors[Math.floor(Math.random() * foodColors.length)];
+
+        // Snake and food positions
+        let snake = [];
+        let direction = { x: 0, y: 0 };
+        let food;
+
+        // Resize canvas based on window size
+        function resizeCanvas() {
+            canvas.width = Math.min(window.innerWidth, window.innerHeight * 0.8) - 50;
+            canvas.height = canvas.width;
+            tileCount = Math.floor(canvas.width / gridSize);
+            resetGame();
+        }
+
+        // Initialize snake position at the center
+        function initializeSnake() {
+            const center = Math.floor(tileCount / 2);
+            snake = [{ x: center, y: center }];
+        }
+
+        // Draw the game state
+        function drawGame() {
+            ctx.fillStyle = '#111';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Draw snake
+            ctx.fillStyle = 'lime';
+            snake.forEach(part => ctx.fillRect(part.x * gridSize, part.y * gridSize, gridSize - 1, gridSize - 1));
+
+            // Draw food
+            ctx.fillStyle = currentFoodColor;
+            ctx.fillRect(food.x * gridSize, food.y * gridSize, gridSize - 1, gridSize - 1);
+        }
+
+        // Update the game state
+        function updateGame() {
+            const head = { x: snake[0].x + direction.x, y: snake[0].y + direction.y };
+
+            // Check for collision with walls or self
+            if (head.x < 0 || head.x >= tileCount || head.y < 0 || head.y >= tileCount || snake.some(part => part.x === head.x && part.y === head.y)) {
+                resetGame();
+                return;
+            }
+
+            // Add new head to the snake
+            snake.unshift(head);
+
+            // Check if snake eats food
+            if (head.x === food.x && head.y === food.y) {
+                food = {
+                    x: Math.floor(Math.random() * tileCount),
+                    y: Math.floor(Math.random() * tileCount)
+                };
+                currentFoodColor = foodColors[Math.floor(Math.random() * foodColors.length)];
+            } else {
+                snake.pop();
+            }
+        }
+
+        // Reset game state
+        function resetGame() {
+            clearInterval(gameInterval);
+            isRunning = false;
+            isPaused = false;
+            initializeSnake();
+            direction = { x: 0, y: 0 };
+            food = {
+                x: Math.floor(Math.random() * tileCount),
+                y: Math.floor(Math.random() * tileCount)
+            };
+            currentFoodColor = foodColors[Math.floor(Math.random() * foodColors.length)];
+            resetButton.textContent = 'Start';
+            pauseButton.disabled = true;
+            pauseButton.textContent = 'Pause';
+            drawGame();
+        }
+
+        // Listen for keyboard input
+        document.addEventListener('keydown', (e) => {
+            if (!isRunning || isPaused) return;
+            switch (e.key) {
+                case 'ArrowUp':
+                    if (direction.y === 0) direction = { x: 0, y: -1 };
+                    break;
+                case 'ArrowDown':
+                    if (direction.y === 0) direction = { x: 0, y: 1 };
+                    break;
+                case 'ArrowLeft':
+                    if (direction.x === 0) direction = { x: -1, y: 0 };
+                    break;
+                case 'ArrowRight':
+                    if (direction.x === 0) direction = { x: 1, y: 0 };
+                    break;
+            }
+        });
+
+        // Start/Reset the game
+        resetButton.addEventListener('click', () => {
+            if (!isRunning) {
+                isRunning = true;
+                isPaused = false;
+                direction = { x: 1, y: 0 }; // Set initial direction
+                resetButton.textContent = 'Reset';
+                pauseButton.disabled = false;
+                gameInterval = setInterval(() => {
+                    if (!isPaused) {
+                        updateGame();
+                        drawGame();
+                    }
+                }, speed);
+            } else {
+                resetGame();
+            }
+        });
+
+        // Pause and resume the game
+        pauseButton.addEventListener('click', () => {
+            isPaused = !isPaused;
+            pauseButton.textContent = isPaused ? 'Resume' : 'Pause';
+        });
+
+        // Handle window resize
+        window.addEventListener('resize', resizeCanvas);
+
+        // Initial setup
+        resizeCanvas();
+    </script>
+</body>
+</html>

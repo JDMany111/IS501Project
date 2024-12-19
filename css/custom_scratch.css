@@ -1,0 +1,56 @@
+body{
+    background-color: rgb(207, 206, 206);
+}
+
+a{
+    text-decoration: none;
+    color: rgb(87, 87, 87);
+}
+
+a:hover{
+    color: black;
+}
+
+.big{font-size: larger;}
+
+h3{
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+p{
+    font-family: 'Times New Roman', Times, serif;
+}
+
+.header{
+    top: 5px;
+    right: 5px;
+    height: 30px;
+    left: 5px;
+    position: fixed;
+    background-color: rgb(245, 243, 243);
+    border: 2px solid black;
+    text-align: right;
+}
+
+.mid{
+position: absolute;
+text-align: left;
+top: 90px;
+height: 20px;
+left: 20px;
+right: 5px;
+}
+
+.foot{
+    bottom: 5px;
+    left: 5px;
+    right: 5px;
+    height: 25px;
+    font-size: small;
+    color: grey;
+    position: fixed;
+    text-align: center;
+}
+
+
+
