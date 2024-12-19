@@ -15,3 +15,8 @@
 .big{
     font-size: x-large;
 }
+
+.link{
+    color: white;
+    text-decoration: none;
+}
